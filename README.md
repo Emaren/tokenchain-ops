@@ -29,6 +29,20 @@ To enable indexer admin tx endpoint:
 
 This enables founder-operated day-1 loyalty admin flows while keeping the chain default (`x/gov`) when unset.
 
+Daily merchant allocation automation:
+1. Edit `/etc/tokenchain/tokenchain-daily-allocation.env`
+2. Set:
+   - `ADMIN_API_TOKEN=<same indexer admin token>`
+   - `TOTAL_BUCKET_C_AMOUNT=<daily utoken amount for Bucket C>`
+   - `ALLOCATION_ITEMS_JSON='[{"denom":"factory/...","activity_score":123}]'`
+3. Set `DRY_RUN=false` once ready.
+4. Start/check timer:
+   - `systemctl enable --now tokenchain-daily-allocation.timer`
+   - `systemctl list-timers tokenchain-daily-allocation.timer`
+
+The timer runs daily at midnight `America/Edmonton` and calls:
+- `POST /v1/admin/loyalty/daily-allocation/run`
+
 Relayer setup guide:
 - `runbooks/relayer-bootstrap.md`
 

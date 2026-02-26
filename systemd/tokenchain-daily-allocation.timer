@@ -1,0 +1,11 @@
+[Unit]
+Description=Run TokenChain Daily Merchant Allocation (Midnight America/Edmonton)
+
+[Timer]
+OnCalendar=*-*-* 00:00:20 America/Edmonton
+Persistent=true
+RandomizedDelaySec=10s
+Unit=tokenchain-daily-allocation.service
+
+[Install]
+WantedBy=timers.target

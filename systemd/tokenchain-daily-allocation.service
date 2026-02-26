@@ -1,0 +1,23 @@
+[Unit]
+Description=TokenChain Daily Merchant Allocation Runner
+After=network-online.target tokenchain-indexer.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=tokenchain
+Group=tokenchain
+WorkingDirectory=/var/www/tokenchain-ops
+ExecStart=/var/www/tokenchain-ops/scripts/run-daily-allocation.sh
+Environment=API_BASE=http://127.0.0.1:3321
+Environment=ALLOW_OVERWRITE=false
+Environment=DRY_RUN=false
+EnvironmentFile=-/etc/tokenchain/tokenchain-daily-allocation.env
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadOnlyPaths=/var/www/tokenchain-ops
+
+[Install]
+WantedBy=multi-user.target

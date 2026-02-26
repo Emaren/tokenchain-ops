@@ -16,6 +16,7 @@
    - `tokenchain-indexer`
    - `tokenchain-web`
    - `tokenchain-faucet`
+   - ensure `tokenchain-daily-allocation.timer` is enabled
 6. Reload nginx with `nginx/tokenchain-unified.conf`.
 7. Issue/renew cert with `certbot certonly --webroot` for all hostnames.
 8. Verify health checks:
@@ -30,4 +31,5 @@
 - Confirm explorer connectivity.
 - Confirm wallet can query balances.
 - Confirm API returns chain metadata.
+- Confirm daily allocation timer is scheduled (`systemctl list-timers tokenchain-daily-allocation.timer`).
 - Confirm `seed.*` resolves and `26656/tcp` is reachable.

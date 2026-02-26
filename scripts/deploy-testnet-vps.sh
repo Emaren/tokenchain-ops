@@ -11,6 +11,7 @@ OPS_REPO="${OPS_REPO:-/var/www/tokenchain-ops}"
 CHAIN_HOME="${CHAIN_HOME:-/var/lib/tokenchain-testnet}"
 CHAIN_ENV_FILE="${CHAIN_ENV_FILE:-/etc/tokenchain/tokenchaind-testnet.env}"
 INDEXER_ENV_FILE="${INDEXER_ENV_FILE:-/etc/tokenchain/tokenchain-indexer.env}"
+DAILY_ALLOCATION_ENV_FILE="${DAILY_ALLOCATION_ENV_FILE:-/etc/tokenchain/tokenchain-daily-allocation.env}"
 MIN_AVAILABLE_KB="${MIN_AVAILABLE_KB:-1572864}" # 1.5 GB
 
 disk_available_kb() {
@@ -88,6 +89,8 @@ cp "${OPS_REPO}/systemd/tokenchaind-testnet.service" /etc/systemd/system/tokench
 cp "${OPS_REPO}/systemd/tokenchain-indexer.service" /etc/systemd/system/tokenchain-indexer.service
 cp "${OPS_REPO}/systemd/tokenchain-faucet.service" /etc/systemd/system/tokenchain-faucet.service
 cp "${OPS_REPO}/systemd/tokenchain-web.service" /etc/systemd/system/tokenchain-web.service
+cp "${OPS_REPO}/systemd/tokenchain-daily-allocation.service" /etc/systemd/system/tokenchain-daily-allocation.service
+cp "${OPS_REPO}/systemd/tokenchain-daily-allocation.timer" /etc/systemd/system/tokenchain-daily-allocation.timer
 cp "${OPS_REPO}/nginx/tokenchain-unified.conf" /etc/nginx/sites-available/tokenchain.tokentap.ca
 ln -sf /etc/nginx/sites-available/tokenchain.tokentap.ca /etc/nginx/sites-enabled/tokenchain.tokentap.ca
 
@@ -120,10 +123,27 @@ else
   echo "  preserving existing ${INDEXER_ENV_FILE}"
 fi
 
+if [[ ! -f "${DAILY_ALLOCATION_ENV_FILE}" ]]; then
+  cat >"${DAILY_ALLOCATION_ENV_FILE}" <<EOF
+API_BASE=http://127.0.0.1:3321
+ADMIN_API_TOKEN=
+TOTAL_BUCKET_C_AMOUNT=1000000
+ALLOCATION_ITEMS_JSON=[]
+ALLOW_OVERWRITE=false
+DRY_RUN=true
+EOF
+  chown root:tokenchain "${DAILY_ALLOCATION_ENV_FILE}"
+  chmod 640 "${DAILY_ALLOCATION_ENV_FILE}"
+  echo "  created ${DAILY_ALLOCATION_ENV_FILE} (configure token + items; DRY_RUN defaults to true)"
+else
+  echo "  preserving existing ${DAILY_ALLOCATION_ENV_FILE}"
+fi
+
 echo "[8/10] Reloading systemd + restarting services"
 systemctl daemon-reload
 systemctl enable --now tokenchaind-testnet tokenchain-indexer tokenchain-faucet tokenchain-web
 systemctl restart tokenchaind-testnet tokenchain-indexer tokenchain-faucet tokenchain-web
+systemctl enable --now tokenchain-daily-allocation.timer
 
 echo "[9/10] Reloading nginx"
 nginx -t
@@ -132,6 +152,8 @@ systemctl reload nginx
 echo "[10/10] Health summary"
 echo "- Services:"
 systemctl is-active tokenchaind-testnet tokenchain-indexer tokenchain-faucet tokenchain-web nginx
+echo "- Timer:"
+systemctl is-active tokenchain-daily-allocation.timer
 echo "- API health:"
 curl -fsS http://127.0.0.1:3321/healthz
 echo
