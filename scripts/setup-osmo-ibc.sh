@@ -14,12 +14,17 @@ A_PORT="${A_PORT:-transfer}"
 B_PORT="${B_PORT:-transfer}"
 CHANNEL_VERSION="${CHANNEL_VERSION:-ics20-1}"
 
-for bin in curl jq runuser; do
+for bin in curl jq; do
   if ! command -v "$bin" >/dev/null 2>&1; then
     echo "ERROR: missing required binary: $bin" >&2
     exit 1
   fi
 done
+
+if [[ "$(id -u)" -eq 0 ]] && ! command -v runuser >/dev/null 2>&1; then
+  echo "ERROR: missing required binary: runuser" >&2
+  exit 1
+fi
 
 if [[ ! -x "${HERMES_BIN}" ]]; then
   echo "ERROR: Hermes binary not found/executable at ${HERMES_BIN}" >&2
@@ -32,7 +37,11 @@ if [[ ! -f "${HERMES_CONFIG}" ]]; then
 fi
 
 run_hermes() {
-  runuser -u tokenchain -- "${HERMES_BIN}" --config "${HERMES_CONFIG}" "$@"
+  if [[ "$(id -u)" -eq 0 ]]; then
+    runuser -u tokenchain -- "${HERMES_BIN}" --config "${HERMES_CONFIG}" "$@"
+  else
+    "${HERMES_BIN}" --config "${HERMES_CONFIG}" "$@"
+  fi
 }
 
 get_client_id() {
