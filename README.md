@@ -48,7 +48,7 @@ Daily merchant allocation automation:
 The timer runs daily at midnight `America/Edmonton` and calls:
 - `POST /v1/admin/loyalty/daily-allocation/run`
 
-Relayer setup guide:
+Relayer setup guide (TokenChain <-> Osmosis testnet `osmo-test-5`):
 - `runbooks/relayer-bootstrap.md`
 
 ## DNS model
