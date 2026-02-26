@@ -51,6 +51,10 @@ The timer runs daily at midnight `America/Edmonton` and calls:
 Relayer setup guide (TokenChain <-> Osmosis testnet `osmo-test-5`):
 - `runbooks/relayer-bootstrap.md`
 - one-shot setup helper (after keys are funded): `scripts/setup-osmo-ibc.sh`
+- optional retry timer (keeps trying until both relayer keys are funded):
+  - `systemd/tokenchain-osmo-ibc-bootstrap.service`
+  - `systemd/tokenchain-osmo-ibc-bootstrap.timer`
+  - enable with `systemctl enable --now tokenchain-osmo-ibc-bootstrap.timer`
 
 ## DNS model
 Mainnet hostnames (recommended):

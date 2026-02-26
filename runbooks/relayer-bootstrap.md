@@ -69,3 +69,13 @@ One-shot helper after keys are funded:
 ```bash
 /var/www/tokenchain-ops/scripts/setup-osmo-ibc.sh
 ```
+
+Optional auto-retry timer (safe to leave running; script is idempotent):
+```bash
+cp /var/www/tokenchain-ops/systemd/tokenchain-osmo-ibc-bootstrap.service /etc/systemd/system/tokenchain-osmo-ibc-bootstrap.service
+cp /var/www/tokenchain-ops/systemd/tokenchain-osmo-ibc-bootstrap.timer /etc/systemd/system/tokenchain-osmo-ibc-bootstrap.timer
+systemctl daemon-reload
+systemctl enable --now tokenchain-osmo-ibc-bootstrap.timer
+systemctl status tokenchain-osmo-ibc-bootstrap.timer --no-pager
+journalctl -u tokenchain-osmo-ibc-bootstrap.service -n 100 --no-pager
+```

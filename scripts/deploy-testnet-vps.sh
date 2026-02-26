@@ -13,6 +13,7 @@ CHAIN_ENV_FILE="${CHAIN_ENV_FILE:-/etc/tokenchain/tokenchaind-testnet.env}"
 INDEXER_ENV_FILE="${INDEXER_ENV_FILE:-/etc/tokenchain/tokenchain-indexer.env}"
 DAILY_ALLOCATION_ENV_FILE="${DAILY_ALLOCATION_ENV_FILE:-/etc/tokenchain/tokenchain-daily-allocation.env}"
 MIN_AVAILABLE_KB="${MIN_AVAILABLE_KB:-1572864}" # 1.5 GB
+ENABLE_OSMO_IBC_TIMER="${ENABLE_OSMO_IBC_TIMER:-false}"
 
 disk_available_kb() {
   df -Pk / | awk 'NR==2 {print $4}'
@@ -91,6 +92,8 @@ cp "${OPS_REPO}/systemd/tokenchain-faucet.service" /etc/systemd/system/tokenchai
 cp "${OPS_REPO}/systemd/tokenchain-web.service" /etc/systemd/system/tokenchain-web.service
 cp "${OPS_REPO}/systemd/tokenchain-daily-allocation.service" /etc/systemd/system/tokenchain-daily-allocation.service
 cp "${OPS_REPO}/systemd/tokenchain-daily-allocation.timer" /etc/systemd/system/tokenchain-daily-allocation.timer
+cp "${OPS_REPO}/systemd/tokenchain-osmo-ibc-bootstrap.service" /etc/systemd/system/tokenchain-osmo-ibc-bootstrap.service
+cp "${OPS_REPO}/systemd/tokenchain-osmo-ibc-bootstrap.timer" /etc/systemd/system/tokenchain-osmo-ibc-bootstrap.timer
 cp "${OPS_REPO}/nginx/tokenchain-unified.conf" /etc/nginx/sites-available/tokenchain.tokentap.ca
 ln -sf /etc/nginx/sites-available/tokenchain.tokentap.ca /etc/nginx/sites-enabled/tokenchain.tokentap.ca
 
@@ -147,6 +150,11 @@ systemctl daemon-reload
 systemctl enable --now tokenchaind-testnet tokenchain-indexer tokenchain-faucet tokenchain-web
 systemctl restart tokenchaind-testnet tokenchain-indexer tokenchain-faucet tokenchain-web
 systemctl enable --now tokenchain-daily-allocation.timer
+if [[ "${ENABLE_OSMO_IBC_TIMER}" == "true" ]]; then
+  systemctl enable --now tokenchain-osmo-ibc-bootstrap.timer
+else
+  echo "  osmo IBC bootstrap timer left disabled (set ENABLE_OSMO_IBC_TIMER=true to enable)"
+fi
 
 echo "[9/10] Reloading nginx"
 nginx -t

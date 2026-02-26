@@ -64,13 +64,38 @@ osmosis_relayer_address() {
   run_hermes keys list --chain "${B_CHAIN}" 2>/dev/null | sed -n -E 's/.*\((osmo1[[:alnum:]]+)\).*/\1/p' | head -n1
 }
 
+tokenchain_relayer_address() {
+  run_hermes keys list --chain "${A_CHAIN}" 2>/dev/null | sed -n -E 's/.*\((tokenchain1[[:alnum:]]+)\).*/\1/p' | head -n1
+}
+
+is_unfunded_err() {
+  local err="$1"
+  echo "${err}" | grep -Eq 'account .* not found|insufficient funds'
+}
+
 echo "[1/6] Hermes health-check"
 run_hermes health-check >/dev/null
 
 echo "[2/6] Ensure client ${A_CHAIN} -> ${B_CHAIN}"
 A_CLIENT="$(get_client_id "${TOKENCHAIN_REST}" "${B_CHAIN}")"
 if [[ -z "${A_CLIENT}" ]]; then
-  run_hermes create client --host-chain "${A_CHAIN}" --reference-chain "${B_CHAIN}" >/dev/null
+  set +e
+  CLIENT_ERR="$(run_hermes create client --host-chain "${A_CHAIN}" --reference-chain "${B_CHAIN}" 2>&1)"
+  CLIENT_CODE=$?
+  set -e
+  if [[ ${CLIENT_CODE} -ne 0 ]]; then
+    if is_unfunded_err "${CLIENT_ERR}"; then
+      TOKENCHAIN_ADDR="$(tokenchain_relayer_address)"
+      echo "ERROR: tokenchain relayer key is not funded yet." >&2
+      if [[ -n "${TOKENCHAIN_ADDR}" ]]; then
+        echo "Fund this address on TokenChain testnet and rerun:" >&2
+        echo "  ${TOKENCHAIN_ADDR}" >&2
+      fi
+      exit 2
+    fi
+    echo "${CLIENT_ERR}" >&2
+    exit ${CLIENT_CODE}
+  fi
   A_CLIENT="$(get_client_id "${TOKENCHAIN_REST}" "${B_CHAIN}")"
 fi
 if [[ -z "${A_CLIENT}" ]]; then
@@ -87,7 +112,7 @@ if [[ -z "${B_CLIENT}" ]]; then
   CLIENT_CODE=$?
   set -e
   if [[ ${CLIENT_CODE} -ne 0 ]]; then
-    if echo "${CLIENT_ERR}" | rg -q 'account .* not found'; then
+    if is_unfunded_err "${CLIENT_ERR}"; then
       OSMO_ADDR="$(osmosis_relayer_address)"
       echo "ERROR: osmo relayer key is not funded yet." >&2
       if [[ -n "${OSMO_ADDR}" ]]; then
