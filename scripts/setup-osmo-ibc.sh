@@ -83,7 +83,9 @@ is_unfunded_err() {
 }
 
 echo "[1/6] Hermes health-check"
-run_hermes health-check >/dev/null
+if ! run_hermes health-check >/dev/null 2>&1; then
+  echo "WARN: Hermes health-check failed; continuing and retrying setup actions." >&2
+fi
 
 echo "[2/6] Ensure client ${A_CHAIN} -> ${B_CHAIN}"
 A_CLIENT="$(get_client_id "${TOKENCHAIN_REST}" "${B_CHAIN}")"
