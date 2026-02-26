@@ -1,0 +1,25 @@
+[Unit]
+Description=TokenChain Web (Next.js)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=tony
+Group=tony
+WorkingDirectory=/var/www/tokenchain-web
+Environment=NODE_ENV=production
+Environment=PORT=3021
+Environment=NEXT_TELEMETRY_DISABLED=1
+ExecStartPre=/usr/bin/test -f /var/www/tokenchain-web/.next/BUILD_ID
+ExecStart=/usr/bin/node /var/www/tokenchain-web/node_modules/next/dist/bin/next start -H 127.0.0.1 -p 3021
+Restart=on-failure
+RestartSec=2
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/www/tokenchain-web
+
+[Install]
+WantedBy=multi-user.target

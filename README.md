@@ -15,7 +15,7 @@ Mainnet hostnames (recommended):
 - `api.tokenchain.tokentap.ca`
 - `rpc.tokenchain.tokentap.ca`
 - `rest.tokenchain.tokentap.ca`
-- `grpc.tokenchain.tokentap.ca` (DNS-only/non-proxied)
+- `grpc.tokenchain.tokentap.ca` (gRPC over TLS via nginx)
 - `explorer.tokenchain.tokentap.ca`
 - `seed.tokenchain.tokentap.ca`
 - `faucet.tokenchain.tokentap.ca`
@@ -29,3 +29,14 @@ Testnet equivalents:
 - `explorer.testnet.tokenchain.tokentap.ca`
 - `seed.testnet.tokenchain.tokentap.ca`
 - `faucet.testnet.tokenchain.tokentap.ca`
+
+## Current VPS bootstrap layout
+- Chain service: `tokenchaind-testnet.service`
+- Chain home: `/var/lib/tokenchain-testnet`
+- Chain binary: `/usr/local/bin/tokenchaind`
+- Web service: `tokenchain-web.service` (`127.0.0.1:3021`)
+- API service: `tokenchain-indexer.service` (`127.0.0.1:3321`)
+- Nginx vhost: `nginx/tokenchain-unified.conf` (single file for all 16 hostnames)
+
+This bootstrap maps both `*.tokenchain.tokentap.ca` and `*.testnet.tokenchain.tokentap.ca`
+to the same testnet backend until mainnet is launched.

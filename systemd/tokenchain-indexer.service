@@ -1,18 +1,24 @@
 [Unit]
 Description=TokenChain Indexer API
-After=network-online.target
+After=network-online.target tokenchaind-testnet.service
 Wants=network-online.target
 
 [Service]
 Type=simple
-User=www-data
-WorkingDirectory=/opt/tokenchain-indexer
-ExecStart=/opt/tokenchain-indexer/tokenchain-indexer
+User=tony
+Group=tony
+WorkingDirectory=/var/www/tokenchain-indexer
+ExecStart=/usr/local/bin/tokenchain-indexer
 Restart=always
 RestartSec=2
 Environment=LISTEN_ADDR=127.0.0.1:3321
 Environment=CHAIN_ID=tokenchain-testnet-1
 Environment=NETWORK=testnet
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/www/tokenchain-indexer
 
 [Install]
 WantedBy=multi-user.target

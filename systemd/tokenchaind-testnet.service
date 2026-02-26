@@ -1,5 +1,5 @@
 [Unit]
-Description=TokenChain Node
+Description=TokenChain Testnet Node
 After=network-online.target
 Wants=network-online.target
 
@@ -7,8 +7,8 @@ Wants=network-online.target
 Type=simple
 User=tokenchain
 Group=tokenchain
-WorkingDirectory=/var/lib/tokenchain-mainnet
-ExecStart=/usr/local/bin/tokenchaind start --home /var/lib/tokenchain-mainnet
+WorkingDirectory=/var/lib/tokenchain-testnet
+ExecStart=/usr/local/bin/tokenchaind start --home /var/lib/tokenchain-testnet
 Restart=on-failure
 RestartSec=3
 LimitNOFILE=65535
@@ -16,7 +16,7 @@ NoNewPrivileges=true
 PrivateTmp=true
 ProtectSystem=full
 ProtectHome=true
-ReadWritePaths=/var/lib/tokenchain-mainnet
+ReadWritePaths=/var/lib/tokenchain-testnet
 
 [Install]
 WantedBy=multi-user.target
