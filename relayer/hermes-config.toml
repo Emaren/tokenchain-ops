@@ -56,9 +56,9 @@ trust_threshold = { numerator = '1', denominator = '3' }
 id = 'osmo-test-5'
 type = 'CosmosSdk'
 ccv_consumer_chain = false
-rpc_addr = 'https://rpc.testnet.osmosis.zone'
-grpc_addr = 'https://grpc.testnet.osmosis.zone:443'
-event_source = { mode = 'push', url = 'wss://rpc.testnet.osmosis.zone/websocket', batch_delay = '500ms' }
+rpc_addr = 'https://rpc.osmotest5.osmosis.zone'
+grpc_addr = 'https://grpc.osmotest5.osmosis.zone:443'
+event_source = { mode = 'push', url = 'wss://rpc.osmotest5.osmosis.zone/websocket', batch_delay = '500ms' }
 rpc_timeout = '10s'
 trusted_node = false
 account_prefix = 'osmo'

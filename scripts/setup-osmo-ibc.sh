@@ -5,7 +5,7 @@ A_CHAIN="${A_CHAIN:-tokenchain-testnet-1}"
 B_CHAIN="${B_CHAIN:-osmo-test-5}"
 
 TOKENCHAIN_REST="${TOKENCHAIN_REST:-https://rest.testnet.tokenchain.tokentap.ca}"
-OSMO_REST="${OSMO_REST:-https://lcd.testnet.osmosis.zone}"
+OSMO_REST="${OSMO_REST:-https://lcd.osmotest5.osmosis.zone}"
 
 HERMES_BIN="${HERMES_BIN:-/usr/local/bin/hermes}"
 HERMES_CONFIG="${HERMES_CONFIG:-/etc/tokenchain/hermes.toml}"
