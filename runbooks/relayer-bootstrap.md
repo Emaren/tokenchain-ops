@@ -64,3 +64,8 @@ Optional explicit channel query:
 ```bash
 curl -sS 'https://rest.testnet.tokenchain.tokentap.ca/ibc/core/channel/v1/channels?pagination.limit=50' | jq .
 ```
+
+One-shot helper after keys are funded:
+```bash
+/var/www/tokenchain-ops/scripts/setup-osmo-ibc.sh
+```

@@ -50,6 +50,7 @@ The timer runs daily at midnight `America/Edmonton` and calls:
 
 Relayer setup guide (TokenChain <-> Osmosis testnet `osmo-test-5`):
 - `runbooks/relayer-bootstrap.md`
+- one-shot setup helper (after keys are funded): `scripts/setup-osmo-ibc.sh`
 
 ## DNS model
 Mainnet hostnames (recommended):
