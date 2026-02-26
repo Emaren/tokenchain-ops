@@ -53,6 +53,7 @@ Testnet equivalents:
 - Chain binary: `/usr/local/bin/tokenchaind`
 - Web service: `tokenchain-web.service` (`127.0.0.1:3021`)
 - API service: `tokenchain-indexer.service` (`127.0.0.1:3321`)
+  - uses local RPC `127.0.0.1:26657` and local REST `127.0.0.1:1317`
 - Faucet service: `tokenchain-faucet.service` (`127.0.0.1:3322`)
 - Nginx vhost: `nginx/tokenchain-unified.conf` (single file for all 16 hostnames)
 
