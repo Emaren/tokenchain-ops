@@ -56,6 +56,12 @@ Relayer setup guide (TokenChain <-> Osmosis testnet `osmo-test-5`):
   - `systemd/tokenchain-osmo-ibc-bootstrap.timer`
   - enable with `systemctl enable --now tokenchain-osmo-ibc-bootstrap.timer`
 
+Public endpoint smoke test:
+- `scripts/check-public-endpoints.sh`
+- examples:
+  - `NETWORK=testnet EXPECTED_IP=157.180.114.124 ./scripts/check-public-endpoints.sh`
+  - `NETWORK=mainnet EXPECTED_IP=157.180.114.124 ./scripts/check-public-endpoints.sh`
+
 ## DNS model
 Mainnet hostnames (recommended):
 - `tokenchain.tokentap.ca`
