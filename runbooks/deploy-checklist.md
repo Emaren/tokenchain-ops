@@ -24,6 +24,7 @@
    - RPC status endpoint
    - REST node info endpoint
 9. Verify relayer service status.
+   - If not yet connected to a peer chain, keep service disabled and use `runbooks/relayer-bootstrap.md`.
 
 ## Post-deploy validation
 - Confirm explorer connectivity.

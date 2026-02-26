@@ -15,6 +15,9 @@ On the VPS as root:
 /var/www/tokenchain-ops/scripts/deploy-testnet-vps.sh
 ```
 
+Relayer setup guide:
+- `runbooks/relayer-bootstrap.md`
+
 ## DNS model
 Mainnet hostnames (recommended):
 - `tokenchain.tokentap.ca`

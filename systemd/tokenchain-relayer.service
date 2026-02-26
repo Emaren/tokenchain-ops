@@ -1,15 +1,21 @@
 [Unit]
 Description=TokenChain Hermes Relayer
-After=network-online.target
+After=network-online.target tokenchaind-testnet.service
 Wants=network-online.target
 
 [Service]
 Type=simple
 User=tokenchain
-WorkingDirectory=/opt/tokenchain-ops/relayer
-ExecStart=/usr/local/bin/hermes start
+Group=tokenchain
+WorkingDirectory=/var/lib/tokenchain-relayer
+ExecStart=/usr/local/bin/hermes --config /etc/tokenchain/hermes.toml start
 Restart=always
 RestartSec=3
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=true
+ReadWritePaths=/var/lib/tokenchain-relayer /etc/tokenchain
 
 [Install]
 WantedBy=multi-user.target
