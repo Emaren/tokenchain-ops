@@ -1,0 +1,16 @@
+[Unit]
+Description=TokenChain Node
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=tokenchain
+WorkingDirectory=/opt/tokenchain-chain
+ExecStart=/opt/tokenchain-chain/tokenchaind start --home /var/lib/tokenchain
+Restart=always
+RestartSec=3
+LimitNOFILE=65535
+
+[Install]
+WantedBy=multi-user.target
