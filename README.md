@@ -36,6 +36,7 @@ Testnet equivalents:
 - Chain binary: `/usr/local/bin/tokenchaind`
 - Web service: `tokenchain-web.service` (`127.0.0.1:3021`)
 - API service: `tokenchain-indexer.service` (`127.0.0.1:3321`)
+- Faucet service: `tokenchain-faucet.service` (`127.0.0.1:3322`)
 - Nginx vhost: `nginx/tokenchain-unified.conf` (single file for all 16 hostnames)
 
 This bootstrap maps both `*.tokenchain.tokentap.ca` and `*.testnet.tokenchain.tokentap.ca`

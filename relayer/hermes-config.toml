@@ -10,7 +10,7 @@ packets.enabled = true
 [[chains]]
 id = 'tokenchain-testnet-1'
 rpc_addr = 'https://rpc.testnet.tokenchain.tokentap.ca'
-grpc_addr = 'http://grpc.testnet.tokenchain.tokentap.ca:9090'
+grpc_addr = 'https://grpc.testnet.tokenchain.tokentap.ca:443'
 websocket_addr = 'wss://rpc.testnet.tokenchain.tokentap.ca/websocket'
 account_prefix = 'tokenchain'
 key_name = 'tokenchain-relayer'
