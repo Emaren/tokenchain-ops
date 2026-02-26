@@ -20,6 +20,12 @@ Optional deploy env knobs:
 
 The deploy script writes `/etc/tokenchain/tokenchaind-testnet.env` with:
 - `TOKENCHAIN_LOYALTY_AUTHORITY=<founder-address>`
+- and bootstraps `/etc/tokenchain/tokenchain-indexer.env` (admin API settings; disabled until `ADMIN_API_TOKEN` is set)
+
+To enable indexer admin tx endpoint:
+1. Edit `/etc/tokenchain/tokenchain-indexer.env`
+2. Set `ADMIN_API_TOKEN=<strong-random-secret>`
+3. `systemctl restart tokenchain-indexer`
 
 This enables founder-operated day-1 loyalty admin flows while keeping the chain default (`x/gov`) when unset.
 

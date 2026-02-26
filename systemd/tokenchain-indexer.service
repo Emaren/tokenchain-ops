@@ -5,8 +5,8 @@ Wants=network-online.target
 
 [Service]
 Type=simple
-User=tony
-Group=tony
+User=tokenchain
+Group=tokenchain
 WorkingDirectory=/var/www/tokenchain-indexer
 ExecStart=/usr/local/bin/tokenchain-indexer
 Restart=always
@@ -16,11 +16,17 @@ Environment=CHAIN_ID=tokenchain-testnet-1
 Environment=NETWORK=testnet
 Environment=RPC_ADDR=http://127.0.0.1:26657
 Environment=REST_ADDR=http://127.0.0.1:1317
+Environment=CHAIN_HOME=/var/lib/tokenchain-testnet
+Environment=KEYRING_BACKEND=test
+Environment=ADMIN_FROM_KEY=founder
+Environment=TX_FEES=5000utoken
+Environment=TX_GAS=200000
+EnvironmentFile=-/etc/tokenchain/tokenchain-indexer.env
 NoNewPrivileges=true
 PrivateTmp=true
 ProtectSystem=strict
 ProtectHome=true
-ReadWritePaths=/var/www/tokenchain-indexer
+ReadWritePaths=/var/www/tokenchain-indexer /var/lib/tokenchain-testnet
 
 [Install]
 WantedBy=multi-user.target

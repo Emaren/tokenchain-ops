@@ -10,6 +10,7 @@ WEB_REPO="${WEB_REPO:-/var/www/tokenchain-web}"
 OPS_REPO="${OPS_REPO:-/var/www/tokenchain-ops}"
 CHAIN_HOME="${CHAIN_HOME:-/var/lib/tokenchain-testnet}"
 CHAIN_ENV_FILE="${CHAIN_ENV_FILE:-/etc/tokenchain/tokenchaind-testnet.env}"
+INDEXER_ENV_FILE="${INDEXER_ENV_FILE:-/etc/tokenchain/tokenchain-indexer.env}"
 MIN_AVAILABLE_KB="${MIN_AVAILABLE_KB:-1572864}" # 1.5 GB
 
 disk_available_kb() {
@@ -90,7 +91,7 @@ cp "${OPS_REPO}/systemd/tokenchain-web.service" /etc/systemd/system/tokenchain-w
 cp "${OPS_REPO}/nginx/tokenchain-unified.conf" /etc/nginx/sites-available/tokenchain.tokentap.ca
 ln -sf /etc/nginx/sites-available/tokenchain.tokentap.ca /etc/nginx/sites-enabled/tokenchain.tokentap.ca
 
-echo "[7/10] Writing tokenchaind runtime env"
+echo "[7/10] Writing runtime env files"
 install -d -m 755 /etc/tokenchain
 FOUNDER_ADDR="$(runuser -u tokenchain -- tokenchaind keys show founder -a --keyring-backend test --home "${CHAIN_HOME}" 2>/dev/null || true)"
 if [[ -n "${FOUNDER_ADDR}" ]]; then
@@ -100,6 +101,23 @@ if [[ -n "${FOUNDER_ADDR}" ]]; then
   echo "  loyalty authority set to founder ${FOUNDER_ADDR}"
 else
   echo "  WARN: founder key not found; leaving ${CHAIN_ENV_FILE} unchanged"
+fi
+
+if [[ ! -f "${INDEXER_ENV_FILE}" ]]; then
+  cat >"${INDEXER_ENV_FILE}" <<EOF
+ADMIN_API_TOKEN=
+ADMIN_FROM_KEY=founder
+CHAIN_HOME=${CHAIN_HOME}
+KEYRING_BACKEND=test
+TX_FEES=5000utoken
+TX_GAS=200000
+TOKENCHAIND_BIN=/usr/local/bin/tokenchaind
+EOF
+  chown root:tokenchain "${INDEXER_ENV_FILE}"
+  chmod 640 "${INDEXER_ENV_FILE}"
+  echo "  created ${INDEXER_ENV_FILE} (ADMIN_API_TOKEN empty; admin endpoint disabled)"
+else
+  echo "  preserving existing ${INDEXER_ENV_FILE}"
 fi
 
 echo "[8/10] Reloading systemd + restarting services"
