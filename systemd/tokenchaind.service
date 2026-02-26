@@ -8,6 +8,7 @@ Type=simple
 User=tokenchain
 Group=tokenchain
 WorkingDirectory=/var/lib/tokenchain-mainnet
+EnvironmentFile=-/etc/tokenchain/tokenchaind-mainnet.env
 ExecStart=/usr/local/bin/tokenchaind start --home /var/lib/tokenchain-mainnet
 Restart=on-failure
 RestartSec=3

@@ -8,6 +8,7 @@ Type=simple
 User=tokenchain
 Group=tokenchain
 WorkingDirectory=/var/lib/tokenchain-testnet
+EnvironmentFile=-/etc/tokenchain/tokenchaind-testnet.env
 ExecStart=/usr/local/bin/tokenchaind start --home /var/lib/tokenchain-testnet
 Restart=on-failure
 RestartSec=3

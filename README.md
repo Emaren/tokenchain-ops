@@ -15,6 +15,11 @@ On the VPS as root:
 /var/www/tokenchain-ops/scripts/deploy-testnet-vps.sh
 ```
 
+The deploy script writes `/etc/tokenchain/tokenchaind-testnet.env` with:
+- `TOKENCHAIN_LOYALTY_AUTHORITY=<founder-address>`
+
+This enables founder-operated day-1 loyalty admin flows while keeping the chain default (`x/gov`) when unset.
+
 Relayer setup guide:
 - `runbooks/relayer-bootstrap.md`
 
