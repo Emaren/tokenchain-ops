@@ -34,7 +34,12 @@ Daily merchant allocation automation:
 2. Set:
    - `ADMIN_API_TOKEN=<same indexer admin token>`
    - `TOTAL_BUCKET_C_AMOUNT=<daily utoken amount for Bucket C>`
-   - `ALLOCATION_ITEMS_JSON='[{"denom":"factory/...","activity_score":123}]'`
+   - `ALLOCATION_MODE=auto` (recommended) or `manual`
+   - Auto mode:
+     - `MIN_ACTIVITY_SCORE=1`
+     - `MAX_AUTO_TOKENS=200`
+   - Manual mode:
+     - `ALLOCATION_ITEMS_JSON='[{"denom":"factory/...","activity_score":123}]'`
 3. Set `DRY_RUN=false` once ready.
 4. Start/check timer:
    - `systemctl enable --now tokenchain-daily-allocation.timer`
