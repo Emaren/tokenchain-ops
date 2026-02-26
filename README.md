@@ -9,6 +9,12 @@ Operational configs and runbooks for TokenChain.
 - `runbooks/` deployment and incident response notes
 - `scripts/` helper scripts for sync/deploy
 
+## Fast deploy (VPS)
+On the VPS as root:
+```bash
+/var/www/tokenchain-ops/scripts/deploy-testnet-vps.sh
+```
+
 ## DNS model
 Mainnet hostnames (recommended):
 - `tokenchain.tokentap.ca`
