@@ -67,4 +67,12 @@ echo "- Faucet health:"
 curl -fsS http://127.0.0.1:3322/healthz
 echo
 echo "- RPC status:"
-curl -fsS http://127.0.0.1:26657/status | jq -r '.result.node_info.network + " height=" + .result.sync_info.latest_block_height'
+for _ in {1..15}; do
+  if curl -fsS http://127.0.0.1:26657/status >/tmp/tokenchain-rpc-status.json 2>/dev/null; then
+    jq -r '.result.node_info.network + " height=" + .result.sync_info.latest_block_height' /tmp/tokenchain-rpc-status.json
+    exit 0
+  fi
+  sleep 2
+done
+echo "ERROR: RPC did not become ready in time"
+exit 1
