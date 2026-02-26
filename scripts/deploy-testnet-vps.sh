@@ -10,6 +10,43 @@ WEB_REPO="${WEB_REPO:-/var/www/tokenchain-web}"
 OPS_REPO="${OPS_REPO:-/var/www/tokenchain-ops}"
 CHAIN_HOME="${CHAIN_HOME:-/var/lib/tokenchain-testnet}"
 CHAIN_ENV_FILE="${CHAIN_ENV_FILE:-/etc/tokenchain/tokenchaind-testnet.env}"
+MIN_AVAILABLE_KB="${MIN_AVAILABLE_KB:-1572864}" # 1.5 GB
+
+disk_available_kb() {
+  df -Pk / | awk 'NR==2 {print $4}'
+}
+
+print_disk_summary() {
+  echo "Filesystem usage:"
+  df -h / /var /home
+  echo "Largest /var/www directories:"
+  du -h -d1 /var/www 2>/dev/null | sort -h | tail -n 15
+}
+
+cleanup_web_build_artifacts() {
+  rm -rf "${WEB_REPO}/node_modules" "${WEB_REPO}/.next"
+  runuser -u tony -- npm cache clean --force >/dev/null 2>&1 || true
+  rm -rf /home/tony/.npm/_logs/* 2>/dev/null || true
+}
+
+ensure_disk_headroom() {
+  local available_kb
+  available_kb="$(disk_available_kb)"
+  if (( available_kb >= MIN_AVAILABLE_KB )); then
+    return
+  fi
+
+  echo "WARN: low disk before web build (${available_kb} KB available; need ${MIN_AVAILABLE_KB} KB)."
+  echo "Cleaning rebuildable web/npm artifacts..."
+  cleanup_web_build_artifacts
+
+  available_kb="$(disk_available_kb)"
+  if (( available_kb < MIN_AVAILABLE_KB )); then
+    echo "ERROR: insufficient disk after cleanup (${available_kb} KB available; need ${MIN_AVAILABLE_KB} KB)."
+    print_disk_summary
+    exit 1
+  fi
+}
 
 echo "[1/8] Pulling latest repos"
 runuser -u tony -- git -C "${CHAIN_REPO}" pull --ff-only
@@ -37,12 +74,15 @@ if ! ldconfig -p | grep -q "libwasmvm.x86_64.so"; then
   ldconfig
 fi
 
-echo "[4/8] Building web app"
+echo "[4/10] Ensuring disk headroom for web build"
+ensure_disk_headroom
+
+echo "[5/10] Building web app"
 cd "${WEB_REPO}"
 runuser -u tony -- npm ci
 runuser -u tony -- npm run build
 
-echo "[5/8] Installing service + nginx templates"
+echo "[6/10] Installing service + nginx templates"
 cp "${OPS_REPO}/systemd/tokenchaind-testnet.service" /etc/systemd/system/tokenchaind-testnet.service
 cp "${OPS_REPO}/systemd/tokenchain-indexer.service" /etc/systemd/system/tokenchain-indexer.service
 cp "${OPS_REPO}/systemd/tokenchain-faucet.service" /etc/systemd/system/tokenchain-faucet.service
@@ -50,7 +90,7 @@ cp "${OPS_REPO}/systemd/tokenchain-web.service" /etc/systemd/system/tokenchain-w
 cp "${OPS_REPO}/nginx/tokenchain-unified.conf" /etc/nginx/sites-available/tokenchain.tokentap.ca
 ln -sf /etc/nginx/sites-available/tokenchain.tokentap.ca /etc/nginx/sites-enabled/tokenchain.tokentap.ca
 
-echo "[6/8] Writing tokenchaind runtime env"
+echo "[7/10] Writing tokenchaind runtime env"
 install -d -m 755 /etc/tokenchain
 FOUNDER_ADDR="$(runuser -u tokenchain -- tokenchaind keys show founder -a --keyring-backend test --home "${CHAIN_HOME}" 2>/dev/null || true)"
 if [[ -n "${FOUNDER_ADDR}" ]]; then
@@ -62,16 +102,16 @@ else
   echo "  WARN: founder key not found; leaving ${CHAIN_ENV_FILE} unchanged"
 fi
 
-echo "[7/8] Reloading systemd + restarting services"
+echo "[8/10] Reloading systemd + restarting services"
 systemctl daemon-reload
 systemctl enable --now tokenchaind-testnet tokenchain-indexer tokenchain-faucet tokenchain-web
 systemctl restart tokenchaind-testnet tokenchain-indexer tokenchain-faucet tokenchain-web
 
-echo "[8/8] Reloading nginx"
+echo "[9/10] Reloading nginx"
 nginx -t
 systemctl reload nginx
 
-echo "[9/9] Health summary"
+echo "[10/10] Health summary"
 echo "- Services:"
 systemctl is-active tokenchaind-testnet tokenchain-indexer tokenchain-faucet tokenchain-web nginx
 echo "- API health:"

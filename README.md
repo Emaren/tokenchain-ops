@@ -15,6 +15,9 @@ On the VPS as root:
 /var/www/tokenchain-ops/scripts/deploy-testnet-vps.sh
 ```
 
+Optional deploy env knobs:
+- `MIN_AVAILABLE_KB` minimum free space required before web build (default `1572864`, ~1.5GB)
+
 The deploy script writes `/etc/tokenchain/tokenchaind-testnet.env` with:
 - `TOKENCHAIN_LOYALTY_AUTHORITY=<founder-address>`
 
